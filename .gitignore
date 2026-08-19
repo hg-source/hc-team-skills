@@ -1,0 +1,26 @@
+# === 비밀·환경설정 (절대 커밋 금지) ===
+.env
+.env.local
+.env.*.local
+*.key
+settings.local.json
+
+# === 의존성 아티팩트 ===
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# === 압축·임시 파일 ===
+*.zip
+*.tmp
+*.log
+.cache/
+
+# === OS·에디터 ===
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
