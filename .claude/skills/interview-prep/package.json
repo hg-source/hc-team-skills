@@ -1,0 +1,8 @@
+{
+  "name": "interview-prep",
+  "version": "1.3.0",
+  "private": true,
+  "type": "commonjs",
+  "engines": { "node": ">=18" },
+  "scripts": { "test": "node --test tests/portable.test.cjs" }
+}

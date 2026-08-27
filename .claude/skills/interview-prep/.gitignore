@@ -1,0 +1,12 @@
+# Runtime data belongs outside this skill; never publish it.
+node_modules/
+jd-cache/
+*_backup_*
+*.pdf
+면접_시드.js
+질문_*.txt
+_ai_*.json
+_pdfs_*.json
+_position_*.txt
+.env*
+*.log
