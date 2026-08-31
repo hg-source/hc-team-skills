@@ -1,0 +1,6 @@
+interface:
+  display_name: "딥서치"
+  short_description: "시장·경쟁·고객·트렌드를 조사하고 근거와 인사이트를 축적"
+  default_prompt: "$deep-search로 이 주제의 시장·고객·경쟁 근거를 조사하고 기존 인사이트와 연결해 저장해줘."
+policy:
+  allow_implicit_invocation: true

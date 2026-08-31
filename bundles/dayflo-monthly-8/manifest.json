@@ -1,0 +1,329 @@
+{
+  "schema_version": 1,
+  "bundle": "dayflo-monthly-8",
+  "version": "2026.08.31",
+  "profile": "dayflo-local",
+  "skills": [
+    {
+      "name": "agent-reach",
+      "source_version": "unversioned",
+      "release_profile": "dayflo-local",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "ee61fce71e0071b1f806c04f779bcb950991e87cf6c77dc65504b4b538e314aa",
+          "bytes": 6240
+        },
+        {
+          "path": "LICENSE",
+          "sha256": "e94c131ac1c2f78cfd8f7e69da354c0ff58e4e54071697703d56856c036de402",
+          "bytes": 1067
+        },
+        {
+          "path": "references/career.md",
+          "sha256": "8e7894fd241c0c6698731698958ce9bf8256a1f250a3089235c7c4c511a4057b",
+          "bytes": 748
+        },
+        {
+          "path": "references/dev.md",
+          "sha256": "f6f91107557eacf1d28a023d597eb5a61353a8a6ede286c3c0a4888d274df9fe",
+          "bytes": 1383
+        },
+        {
+          "path": "references/finance.md",
+          "sha256": "c0cf89af1119d81890f6797ff9e8154a00ee08c17141e7d18c1b09658a916551",
+          "bytes": 1474
+        },
+        {
+          "path": "references/search.md",
+          "sha256": "23bfc54a3b85847ac7c1e12d6dbb0913d6fa3bb89a706d79e2b36396a8a8ef5d",
+          "bytes": 1066
+        },
+        {
+          "path": "references/social.md",
+          "sha256": "e2e6451eb931effd4f63ea407fbb109bea1e98de34bd703c52753ad0cc7025b3",
+          "bytes": 10521
+        },
+        {
+          "path": "references/video.md",
+          "sha256": "167ce732382c664eea63b884685dc085caa27cd69820138f7eeb91b0162efac8",
+          "bytes": 5515
+        },
+        {
+          "path": "references/web.md",
+          "sha256": "b238fc897975a693d7bb262600ca2ea69cd13a4892e870d346dbe375c880b303",
+          "bytes": 1087
+        }
+      ]
+    },
+    {
+      "name": "deep-search",
+      "source_version": "1.0.2",
+      "release_profile": "dayflo-local",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "48b6a80280366e8e288eb6a06030e0999f68560f49dc1b5249973fd7789a5a2e",
+          "bytes": 7561
+        },
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "55f35e7fd82dce093aeb741eb3bc4403cd45e2f4240ce0400d35262ea86a6df7",
+          "bytes": 330
+        },
+        {
+          "path": "connections.json",
+          "sha256": "eea2f362f8fd7032f555faa9941f0165777c03184cc4d99bafde15c95672b3b6",
+          "bytes": 305
+        },
+        {
+          "path": "references/common-runtime.md",
+          "sha256": "946a3237fce7354d1244ef04d70ec544b6fcc274a3460ca4649ce69c92b129cf",
+          "bytes": 6541
+        },
+        {
+          "path": "references/notion-storage.md",
+          "sha256": "f884fd9ec286aee23e86f2518874a8e801ad85b17178b77e41470a708919eee9",
+          "bytes": 5338
+        },
+        {
+          "path": "references/research-methods.md",
+          "sha256": "b34220bf8283d809ffb099aed300c3029717d8598847874a90ed4a2e335701ff",
+          "bytes": 3900
+        }
+      ]
+    },
+    {
+      "name": "deep-validation-flow",
+      "source_version": "0.1.3",
+      "release_profile": "dayflo-local",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "4f90af2f86f7eca695c2173fd3bbdf9b3087d4a2bd910f0014746cd70913a371",
+          "bytes": 10157
+        },
+        {
+          "path": "agents/openai.yaml",
+          "sha256": "dc6949ecf90fde600c21ba64cdaf2555d8977326552fd0d3f4cec7c662e8da5d",
+          "bytes": 365
+        },
+        {
+          "path": "evals/cases.yaml",
+          "sha256": "81e8bc0f66d6a8535f91f6bf706572b8769878a0f802adf7547dbb43126c1576",
+          "bytes": 2297
+        },
+        {
+          "path": "evals/rubric.yaml",
+          "sha256": "949c278e608bca9d66e97005160ee6b0c3ca169b10646f5774f213e0180af844",
+          "bytes": 1626
+        },
+        {
+          "path": "references/common-runtime.md",
+          "sha256": "946a3237fce7354d1244ef04d70ec544b6fcc274a3460ca4649ce69c92b129cf",
+          "bytes": 6541
+        },
+        {
+          "path": "references/decision-and-routing.md",
+          "sha256": "1813feb6a942bfdbdd30c01325eb4ae34800117c3606cf9c5e5dadecc7fb2e91",
+          "bytes": 3025
+        },
+        {
+          "path": "references/evaluation-and-versioning.md",
+          "sha256": "f5ac6c4fa42b21b14d9ffceb1e8651e447a00f7d1987bb28a8a19955dd6b8933",
+          "bytes": 2493
+        },
+        {
+          "path": "references/evidence-and-deliberation.md",
+          "sha256": "4b842a08150da3257c1836b46292d056f3a62b258c23c2f8f4537aa25709c71a",
+          "bytes": 2822
+        },
+        {
+          "path": "references/forecasting-and-gates.md",
+          "sha256": "e163682fdbbe4feaf07a4c3138821ff0b9e8c6a910bceee3887a591e5bc6b41d",
+          "bytes": 2142
+        },
+        {
+          "path": "references/team-and-research-protocol.md",
+          "sha256": "adf30a0fcbe86105b9d622fabba87ee2a26a795357ec3eaef85219734bff21df",
+          "bytes": 2939
+        },
+        {
+          "path": "scripts/init_research_project.ps1",
+          "sha256": "412f1adca130373cbdd35a40c35582cafc5e8bf2d36309f7394834c348822628",
+          "bytes": 6636
+        },
+        {
+          "path": "scripts/validate_research_project.ps1",
+          "sha256": "d48e8af61ae0d3e58edecbbb5cb0897addb2c93c553505d4a37d354b22ef0ab0",
+          "bytes": 3128
+        }
+      ]
+    },
+    {
+      "name": "deepflow",
+      "source_version": "0.1.0",
+      "release_profile": "dayflo-local",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "2552cb638aec87861ba6171bc25df55c8158f9e2e99b76c8a1370d08e51b9573",
+          "bytes": 8080
+        },
+        {
+          "path": "references/common-runtime.md",
+          "sha256": "946a3237fce7354d1244ef04d70ec544b6fcc274a3460ca4649ce69c92b129cf",
+          "bytes": 6541
+        },
+        {
+          "path": "references/mission-card.md",
+          "sha256": "49246b7ece8ad9f6db1560146bc3f6d6bf96bc7493b665b36d2e65e4bb25df24",
+          "bytes": 4624
+        }
+      ]
+    },
+    {
+      "name": "night-mode",
+      "source_version": "1.1.1",
+      "release_profile": "dayflo-local",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "0b99d7236b4d007e195f2adf7695904abe694c460a960c5679f16effafcaa804",
+          "bytes": 14305
+        },
+        {
+          "path": "references/common-runtime.md",
+          "sha256": "946a3237fce7354d1244ef04d70ec544b6fcc274a3460ca4649ce69c92b129cf",
+          "bytes": 6541
+        }
+      ]
+    },
+    {
+      "name": "visual-deck",
+      "source_version": "unversioned",
+      "release_profile": "dayflo-local",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "c21c1a0ee108091135e04ef7808407007f3dd93f4603788c7bcb851bc58347fe",
+          "bytes": 5162
+        },
+        {
+          "path": "assets/data-report.html",
+          "sha256": "3590032804acb7e53b8ff281a75d5d2391e365082609c7aafcba1499292caf22",
+          "bytes": 46231
+        },
+        {
+          "path": "assets/executive-minimal.html",
+          "sha256": "3fbcc20af9b2cfcb583ec4018635a7104378bda2177667bce3c43c33aa62ea13",
+          "bytes": 35359
+        },
+        {
+          "path": "assets/learning-friendly.html",
+          "sha256": "3954af2e7168e7793506f538af2509aa0ea0be3ab1535f0caefaee38e669d570",
+          "bytes": 35809
+        },
+        {
+          "path": "assets/pitch-impact.html",
+          "sha256": "de7a92bdf6bee339c33b1fbb71046b8a9ecffe5359e7d482ca054b41f7e8894f",
+          "bytes": 38989
+        }
+      ]
+    },
+    {
+      "name": "ppt-deck",
+      "source_version": "unversioned",
+      "release_profile": "dayflo-local",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "fea86f98b28b183f1cf6952c8e03eb83fbefc15c32543fa723cb813031c98232",
+          "bytes": 7379
+        },
+        {
+          "path": "assets/layout-library.html",
+          "sha256": "3598e9c18954d62de2b7edd8d9fcf1aef7c468c347f7ca51a07c73931af059b4",
+          "bytes": 31835
+        },
+        {
+          "path": "scripts/storyboard.mjs",
+          "sha256": "2fe07b02243a112492fa96bff384a1257d1745553f09b5651c9ba3c57656e70d",
+          "bytes": 13881
+        },
+        {
+          "path": "scripts/pptx-deck-builder.js",
+          "sha256": "45962f796486416ed62aadb3e7118079f94e8f8ae78804131380d6dca04f9416",
+          "bytes": 6373
+        },
+        {
+          "path": "scripts/package.json",
+          "sha256": "227e63fed501ebea313babbf08663f7e0ac5b7af9a088e0ecbb9aee3d5b50a87",
+          "bytes": 162
+        }
+      ]
+    },
+    {
+      "name": "pptx-expert-v2",
+      "source_version": "0.1.0",
+      "release_profile": "dayflo-local",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "sha256": "2506ea128ec7078d04d584b9fdddc8028f25dba0c0e524ecbadd772ca333aa80",
+          "bytes": 9279
+        },
+        {
+          "path": "references/anti-ai-style.md",
+          "sha256": "41a730956595a4bd6e3ed2d38db150162b791e52284dabaa90de558dac5ca413",
+          "bytes": 1661
+        },
+        {
+          "path": "references/DESIGN.md",
+          "sha256": "43ca3f97dcda25d5804657f39fe7e939454fd6285d0e0e07874724c3006e5219",
+          "bytes": 3407
+        },
+        {
+          "path": "references/layout-catalog.md",
+          "sha256": "dc0f6c75bc0f8d6f131cd550179adff47ba12d3acb53d5c00c4df2f4ae11ce1b",
+          "bytes": 2156
+        },
+        {
+          "path": "scripts/analyze_pptx.py",
+          "sha256": "a0bea71d96fdc1859d8d295c458f7773ab9cc080a9e3063cb7c71cc7546bd7ad",
+          "bytes": 3818
+        },
+        {
+          "path": "scripts/render_and_inspect.ps1",
+          "sha256": "9adabe6dbeb089880b28ccf3bf946920db6b43ad06217a27facb32a9d2a7bff0",
+          "bytes": 3795
+        },
+        {
+          "path": "scripts/validate_plan.py",
+          "sha256": "1bee96b70797c68470ee471a80f95f747d3ea127ce646eac1b0f18c499cf2048",
+          "bytes": 4006
+        },
+        {
+          "path": "scripts/pptx-deck-builder.js",
+          "sha256": "45962f796486416ed62aadb3e7118079f94e8f8ae78804131380d6dca04f9416",
+          "bytes": 6373
+        },
+        {
+          "path": "scripts/package.json",
+          "sha256": "227e63fed501ebea313babbf08663f7e0ac5b7af9a088e0ecbb9aee3d5b50a87",
+          "bytes": 162
+        },
+        {
+          "path": "tests/test_analyze_pptx.py",
+          "sha256": "aec41cfb1a9b8718061536b786892321b5ca27738441acfe42a27be3ad93e6c0",
+          "bytes": 2695
+        },
+        {
+          "path": "tests/test_validate_plan.py",
+          "sha256": "7044d13a38e7a74fe5eb359a99fc51d244fa13403bf50626a875876b6fc2b24a",
+          "bytes": 3068
+        }
+      ]
+    }
+  ]
+}

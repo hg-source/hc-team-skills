@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Visual Deck OS Executive Minimal 0.1 sample deck">
+  <title>Visual Deck · Executive Minimal 0.1</title>
+  <style>
+    :root {
+      --paper: #f4f1e9;
+      --paper-2: #ebe6dc;
+      --ink: #111318;
+      --muted: #666b73;
+      --line: rgba(17, 19, 24, .18);
+      --blue: #2d5bff;
+      --blue-soft: #dfe6ff;
+      --lime: #c8f04a;
+      --coral: #ff6b4a;
+      --white: #fffefa;
+      --shadow: 0 28px 80px rgba(17, 19, 24, .15);
+      --ease: cubic-bezier(.22, 1, .36, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 5%, rgba(45, 91, 255, .09), transparent 26%),
+        linear-gradient(135deg, #e7e2d8, #f8f6f0 48%, #e5e1d8);
+      font-family: "Pretendard Variable", Pretendard, "Noto Sans KR", "Segoe UI", Arial, sans-serif;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, a { font: inherit; }
+    a { color: inherit; text-decoration-color: rgba(17, 19, 24, .35); text-underline-offset: 3px; }
+    button { color: inherit; }
+
+    .app { width: 100%; height: 100%; position: relative; }
+    .stage { position: absolute; inset: 0; display: grid; place-items: center; padding: 14px; }
+    .deck {
+      position: relative;
+      container-type: size;
+      width: min(calc(100vw - 28px), calc((100vh - 28px) * 16 / 9));
+      height: min(calc(100vh - 28px), calc((100vw - 28px) * 9 / 16));
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: clamp(34px, 4.35cqw, 84px) clamp(38px, 5.25cqw, 102px) clamp(34px, 4.1cqw, 78px);
+      background: var(--paper);
+      overflow: hidden;
+    }
+    .slide.active { display: flex; flex-direction: column; animation: enter .48s var(--ease) both; }
+    @keyframes enter { from { opacity: 0; transform: translateY(8px) scale(.997); } to { opacity: 1; transform: none; } }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image: linear-gradient(to right, rgba(17,19,24,.042) 1px, transparent 1px);
+      background-size: calc(100% / 12) 100%;
+      opacity: .45;
+      mask-image: linear-gradient(to right, transparent 1%, #000 8%, #000 92%, transparent 99%);
+    }
+
+    .kicker {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 clamp(16px, 1.65cqw, 30px);
+      color: var(--blue);
+      font-size: clamp(11px, .82cqw, 16px);
+      font-weight: 820;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .kicker::before { content: ""; width: 26px; height: 3px; background: currentColor; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { word-break: keep-all; text-wrap: balance; }
+    h1 { margin-bottom: 24px; max-width: 12ch; font-size: clamp(42px, 6.15cqw, 112px); line-height: .98; letter-spacing: -.065em; font-weight: 840; }
+    h2 { margin-bottom: clamp(22px, 2.4cqw, 44px); max-width: 18ch; font-size: clamp(31px, 4.05cqw, 74px); line-height: 1.06; letter-spacing: -.052em; font-weight: 820; }
+    h3 { margin-bottom: 10px; font-size: clamp(18px, 1.45cqw, 28px); line-height: 1.2; letter-spacing: -.025em; }
+    .lead { max-width: 44em; margin-bottom: 0; color: var(--muted); font-size: clamp(16px, 1.35cqw, 25px); line-height: 1.56; word-break: keep-all; }
+    .small { color: var(--muted); font-size: clamp(11px, .82cqw, 15px); line-height: 1.5; }
+    .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; letter-spacing: -.03em; }
+    .accent { color: var(--blue); }
+    .coral { color: var(--coral); }
+    .nowrap { white-space: nowrap; }
+
+    .slide-no {
+      position: absolute;
+      top: clamp(24px, 2.1cqw, 40px);
+      right: clamp(30px, 3cqw, 58px);
+      color: rgba(17,19,24,.45);
+      font-size: clamp(11px, .78cqw, 15px);
+      font-weight: 760;
+      letter-spacing: .12em;
+      font-variant-numeric: tabular-nums;
+    }
+    .cover .slide-no, .statement .slide-no, .flow .slide-no, .close .slide-no { color: rgba(255,255,255,.45); }
+    .source {
+      position: absolute;
+      left: clamp(38px, 5.25cqw, 102px);
+      right: clamp(38px, 5.25cqw, 102px);
+      bottom: clamp(16px, 1.3cqw, 25px);
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+      color: rgba(17,19,24,.56);
+      font-size: clamp(8px, .58cqw, 11px);
+      line-height: 1.35;
+    }
+
+    /* 01 Cover */
+    .cover { justify-content: space-between; color: var(--white); background: var(--ink); }
+    .cover::before {
+      opacity: .22;
+      background-image: linear-gradient(to right, rgba(255,255,255,.16) 1px, transparent 1px);
+      mask-image: none;
+    }
+    .cover .kicker { color: var(--lime); }
+    .cover .brandline { display: flex; justify-content: space-between; align-items: center; color: rgba(255,255,255,.58); font-size: clamp(11px, .78cqw, 15px); letter-spacing: .08em; }
+    .cover .hero { position: relative; display: grid; grid-template-columns: 8fr 3fr; align-items: end; gap: 5%; }
+    .cover h1 { max-width: 10.2ch; margin: 0; }
+    .cover .manifesto { align-self: end; padding: 22px 0 8px; border-top: 1px solid rgba(255,255,255,.3); color: rgba(255,255,255,.72); font-size: clamp(14px, 1.15cqw, 22px); line-height: 1.52; word-break: keep-all; }
+    .cover .orb { position: absolute; right: -4%; bottom: -48%; width: 32%; aspect-ratio: 1; border: 2px solid var(--lime); border-radius: 50%; box-shadow: 0 0 0 26px rgba(200,240,74,.06), 0 0 0 58px rgba(200,240,74,.035); }
+
+    /* 02 Three principles */
+    .principles { justify-content: space-between; }
+    .principle-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 2px solid var(--ink); }
+    .principle { min-height: clamp(150px, 18cqw, 320px); padding: clamp(18px, 2cqw, 38px) clamp(14px, 1.8cqw, 34px) 0 0; border-right: 1px solid var(--line); }
+    .principle + .principle { padding-left: clamp(16px, 1.9cqw, 36px); }
+    .principle:last-child { border-right: 0; }
+    .principle .num { display: block; margin-bottom: clamp(22px, 3cqw, 54px); color: var(--blue); font-size: clamp(13px, 1cqw, 19px); font-weight: 800; }
+    .principle p { max-width: 20em; margin: 0; color: var(--muted); font-size: clamp(13px, 1.02cqw, 19px); line-height: 1.5; word-break: keep-all; }
+
+    /* 03 Hierarchy */
+    .hierarchy { justify-content: center; }
+    .hierarchy h2 { margin-bottom: clamp(28px, 4cqw, 72px); }
+    .hierarchy-row { display: grid; grid-template-columns: .7fr 1.25fr 1fr; align-items: end; gap: 4.5%; }
+    .hierarchy-unit { padding-top: 16px; border-top: 3px solid var(--ink); }
+    .hierarchy-unit:nth-child(2) { border-color: var(--blue); }
+    .hierarchy-unit .rank { display: block; margin-bottom: 10px; color: var(--muted); font-size: clamp(10px, .7cqw, 13px); letter-spacing: .12em; }
+    .hierarchy-unit strong { display: block; margin-bottom: 11px; font-size: clamp(25px, 2.9cqw, 54px); letter-spacing: -.045em; }
+    .hierarchy-unit p { margin: 0; color: var(--muted); font-size: clamp(12px, .92cqw, 17px); line-height: 1.5; word-break: keep-all; }
+
+    /* 04 Statement */
+    .statement { justify-content: center; background: var(--blue); color: var(--white); }
+    .statement::before { opacity: .18; background-image: linear-gradient(to right, rgba(255,255,255,.22) 1px, transparent 1px); mask-image: none; }
+    .statement .giant { position: absolute; left: 3%; bottom: -27%; color: rgba(255,255,255,.09); font-size: clamp(260px, 42cqw, 760px); font-weight: 900; line-height: 1; letter-spacing: -.12em; }
+    .statement .content { position: relative; z-index: 1; display: grid; grid-template-columns: 3fr 8fr; align-items: start; gap: 7%; }
+    .statement .index { padding-top: 10px; border-top: 2px solid rgba(255,255,255,.8); color: var(--lime); font-size: clamp(15px, 1.2cqw, 22px); font-weight: 820; letter-spacing: .12em; }
+    .statement h2 { max-width: 13ch; margin-bottom: 25px; font-size: clamp(42px, 5.6cqw, 102px); }
+    .statement .lead { max-width: 35em; color: rgba(255,255,255,.72); }
+
+    /* 05 Comparison */
+    .compare { justify-content: space-between; }
+    .compare h2 { max-width: 19ch; }
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5.5%; }
+    .compare-panel { padding-top: 14px; border-top: 2px solid var(--ink); }
+    .compare-panel.after { border-color: var(--blue); }
+    .compare-panel .label { display: flex; justify-content: space-between; margin-bottom: clamp(20px, 2.4cqw, 44px); color: var(--muted); font-size: clamp(10px, .72cqw, 14px); font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+    .compare-panel blockquote { margin: 0; font-size: clamp(22px, 2.55cqw, 46px); font-weight: 780; line-height: 1.15; letter-spacing: -.04em; word-break: keep-all; }
+    .compare-panel.after blockquote { color: var(--blue); }
+    .compare-panel p { margin: 20px 0 0; color: var(--muted); font-size: clamp(12px, .9cqw, 17px); line-height: 1.45; word-break: keep-all; }
+
+    /* 06 Flow */
+    .flow { justify-content: space-between; color: var(--white); background: #191c22; }
+    .flow::before { opacity: .16; background-image: linear-gradient(to right, rgba(255,255,255,.2) 1px, transparent 1px); mask-image: none; }
+    .flow .kicker { color: var(--lime); }
+    .flow .lead { color: rgba(255,255,255,.62); }
+    .flow-track { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; padding-top: 32px; }
+    .flow-track::before { content: ""; position: absolute; top: 39px; left: 3%; right: 3%; height: 2px; background: rgba(255,255,255,.24); }
+    .flow-step { position: relative; padding-right: 16%; }
+    .flow-step::before { content: ""; position: relative; z-index: 1; display: block; width: 15px; height: 15px; margin-bottom: clamp(22px, 2.5cqw, 44px); border: 4px solid #191c22; border-radius: 50%; background: var(--lime); box-shadow: 0 0 0 1px rgba(255,255,255,.35); }
+    .flow-step:last-child::before { background: var(--coral); }
+    .flow-step strong { display: block; margin-bottom: 8px; font-size: clamp(17px, 1.45cqw, 28px); }
+    .flow-step span { color: rgba(255,255,255,.58); font-size: clamp(11px, .84cqw, 16px); line-height: 1.45; word-break: keep-all; }
+
+    /* 07 Chart */
+    .chart-slide { justify-content: space-between; }
+    .chart-head { display: grid; grid-template-columns: 7fr 3fr; align-items: end; gap: 5%; }
+    .chart-head h2 { margin: 0; }
+    .chart-head .chart-note { padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: clamp(11px, .85cqw, 16px); line-height: 1.45; }
+    .chart { display: grid; grid-template-columns: 90px 1fr; gap: 18px; min-height: clamp(220px, 22cqw, 410px); padding-top: 18px; border-top: 2px solid var(--ink); }
+    .axis { display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 28px; color: var(--muted); font-size: clamp(9px, .65cqw, 12px); }
+    .bars { display: grid; grid-template-columns: repeat(3, 1fr); align-items: end; gap: 7%; border-bottom: 1px solid var(--line); }
+    .bar-wrap { height: 100%; display: flex; flex-direction: column; justify-content: flex-end; }
+    .bar-value { margin-bottom: 10px; font-size: clamp(22px, 2.2cqw, 40px); font-weight: 830; letter-spacing: -.04em; }
+    .bar { width: 100%; background: var(--ink); min-height: 6px; }
+    .bar.b2 { background: var(--blue); }
+    .bar.b3 { background: var(--coral); }
+    .bar-label { margin-top: 10px; color: var(--muted); font-size: clamp(10px, .76cqw, 14px); font-weight: 720; }
+
+    /* 08 Explain */
+    .explain { justify-content: space-between; background: var(--white); }
+    .explain-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 7%; align-items: end; }
+    .explain .scene { position: relative; min-height: clamp(240px, 24cqw, 440px); border: 2px solid var(--ink); border-radius: 50% 50% 8% 8% / 38% 38% 8% 8%; background: var(--blue-soft); overflow: hidden; }
+    .scene .bubble { position: absolute; left: 9%; top: 12%; width: 56%; padding: 15px 18px; border-radius: 22px 22px 22px 4px; background: var(--white); font-size: clamp(12px, .9cqw, 17px); font-weight: 700; line-height: 1.45; box-shadow: 0 8px 24px rgba(17,19,24,.1); }
+    .scene .person { position: absolute; right: 7%; bottom: -12%; width: 42%; aspect-ratio: .82; border-radius: 50% 50% 12% 12%; background: var(--blue); transform: rotate(-4deg); }
+    .scene .person::before { content: ""; position: absolute; left: 21%; top: -24%; width: 58%; aspect-ratio: 1; border: 2px solid var(--ink); border-radius: 50%; background: var(--lime); }
+    .scene .person::after { content: ""; position: absolute; left: 35%; top: -2%; width: 9%; height: 9%; border-radius: 50%; background: var(--ink); box-shadow: 38px 0 0 var(--ink); }
+    .explain-steps { display: grid; gap: 0; border-top: 2px solid var(--ink); }
+    .explain-step { display: grid; grid-template-columns: 56px 1fr; gap: 18px; padding: clamp(14px, 1.6cqw, 28px) 0; border-bottom: 1px solid var(--line); }
+    .explain-step .n { color: var(--blue); font-size: clamp(11px, .8cqw, 15px); font-weight: 820; }
+    .explain-step strong { display: block; margin-bottom: 5px; font-size: clamp(16px, 1.25cqw, 24px); }
+    .explain-step p { margin: 0; color: var(--muted); font-size: clamp(11px, .84cqw, 16px); line-height: 1.45; word-break: keep-all; }
+
+    /* 09 System */
+    .system-slide { justify-content: space-between; }
+    .system-map { display: grid; grid-template-columns: 1.15fr .65fr 1.6fr; align-items: stretch; min-height: clamp(230px, 24cqw, 440px); border-top: 2px solid var(--ink); border-bottom: 1px solid var(--line); }
+    .system-core { display: flex; flex-direction: column; justify-content: space-between; padding: clamp(20px, 2cqw, 38px) 9% clamp(20px, 2cqw, 38px) 0; border-right: 1px solid var(--line); }
+    .system-core .core-mark { width: 68px; height: 68px; display: grid; place-items: center; color: var(--white); background: var(--blue); border-radius: 50%; font-size: 20px; font-weight: 850; }
+    .system-core strong { display: block; margin: 8px 0 10px; font-size: clamp(22px, 2.4cqw, 44px); line-height: 1.05; letter-spacing: -.045em; }
+    .system-arrow { display: grid; place-items: center; color: var(--blue); font-size: clamp(36px, 5cqw, 90px); }
+    .layout-list { display: grid; grid-template-rows: repeat(4, 1fr); }
+    .layout-item { display: grid; grid-template-columns: 58px 1fr; align-items: center; gap: 18px; border-bottom: 1px solid var(--line); }
+    .layout-item:last-child { border-bottom: 0; }
+    .layout-item .n { color: var(--muted); font-size: clamp(10px, .7cqw, 13px); font-weight: 800; }
+    .layout-item strong { font-size: clamp(16px, 1.25cqw, 24px); }
+
+    /* 10 Close */
+    .close { justify-content: space-between; color: var(--white); background: var(--ink); }
+    .close::before { opacity: .15; background-image: linear-gradient(to right, rgba(255,255,255,.2) 1px, transparent 1px); mask-image: none; }
+    .close .kicker { color: var(--lime); }
+    .close h2 { max-width: 14ch; margin-bottom: 0; font-size: clamp(40px, 5.8cqw, 106px); }
+    .close-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4%; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.28); }
+    .close-item { color: rgba(255,255,255,.68); font-size: clamp(12px, .92cqw, 17px); line-height: 1.5; word-break: keep-all; }
+    .close-item strong { display: block; margin-bottom: 8px; color: var(--white); font-size: clamp(16px, 1.25cqw, 23px); }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transform: translateX(-50%);
+      padding: 7px;
+      border: 1px solid rgba(17,19,24,.12);
+      border-radius: 999px;
+      background: rgba(255,254,250,.9);
+      box-shadow: 0 8px 30px rgba(17,19,24,.14);
+      backdrop-filter: blur(16px);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+    .nav button { width: 38px; height: 38px; border: 0; border-radius: 50%; background: transparent; cursor: pointer; font-size: 17px; }
+    .nav button:hover, .nav button:focus-visible { outline: none; background: var(--blue-soft); }
+    .counter { min-width: 70px; text-align: center; color: var(--muted); font-size: 12px; font-weight: 760; font-variant-numeric: tabular-nums; }
+    .progress { position: fixed; left: 0; right: 0; bottom: 0; z-index: 51; height: 4px; background: rgba(17,19,24,.12); }
+    .progress span { display: block; width: 0; height: 100%; background: var(--blue); transition: width .35s var(--ease); }
+    .hint { position: fixed; right: 22px; bottom: 22px; z-index: 49; color: rgba(17,19,24,.46); font-size: 11px; letter-spacing: .03em; }
+
+    /* Overview */
+    .overview {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      padding: 34px;
+      overflow: auto;
+      background: rgba(17,19,24,.96);
+    }
+    .overview.open { display: block; }
+    .overview-head { display: flex; justify-content: space-between; align-items: center; max-width: 1500px; margin: 0 auto 22px; color: var(--white); }
+    .overview-head strong { font-size: 18px; }
+    .overview-head button { border: 1px solid rgba(255,255,255,.3); border-radius: 999px; padding: 8px 14px; color: var(--white); background: transparent; cursor: pointer; }
+    .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; max-width: 1500px; margin: 0 auto; }
+    .thumb { position: relative; aspect-ratio: 16/9; overflow: hidden; border: 1px solid rgba(255,255,255,.2); background: var(--paper); cursor: pointer; transition: transform .2s ease, border-color .2s ease; }
+    .thumb:hover, .thumb:focus-visible { outline: none; transform: translateY(-3px); border-color: var(--lime); }
+    .thumb-inner { position: absolute; inset: 0; container-type: size; transform-origin: top left; pointer-events: none; }
+    .thumb-label { position: absolute; left: 10px; bottom: 8px; z-index: 2; padding: 3px 7px; border-radius: 999px; color: #fff; background: rgba(17,19,24,.72); font-size: 10px; }
+
+    @media (max-width: 760px) {
+      .stage { padding: 0; }
+      .deck { position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px; transform: translate(-50%, -50%) scale(var(--mobile-scale, .25)); transform-origin: center; box-shadow: none; }
+      .nav { bottom: 14px; }
+      .hint { display: none; }
+      .source { display: none; }
+    }
+
+    @media print {
+      @page { size: 13.333in 7.5in; margin: 0; }
+      html, body { width: auto; height: auto; overflow: visible; background: #fff; }
+      .app, .stage, .deck { display: block; position: static; width: auto; height: auto; padding: 0; box-shadow: none; overflow: visible; }
+      .deck { container-type: normal; }
+      .slide, .slide.active {
+        display: flex !important;
+        position: relative;
+        width: 13.333in;
+        height: 7.5in;
+        break-after: page;
+        animation: none !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+      .nav, .progress, .hint, .overview { display: none !important; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="stage">
+      <main class="deck" id="deck" aria-live="polite">
+        <section class="slide cover active" data-title="Cover">
+          <div class="brandline"><span>VISUAL DECK OS</span><span>EXECUTIVE MINIMAL · 0.1</span></div>
+          <div class="hero">
+            <div>
+              <div class="kicker">A better first draft</div>
+              <h1>좋은 슬라이드는 보기 전에 결론이 보인다</h1>
+            </div>
+            <p class="manifesto">논리는 컨설팅처럼 명확하게,<br>시각은 토스처럼 간결하게,<br>설명은 카카오처럼 쉽게.</p>
+            <div class="orb" aria-hidden="true"></div>
+          </div>
+        </section>
+
+        <section class="slide principles" data-title="Three principles">
+          <div>
+            <div class="kicker">Reference synthesis</div>
+            <h2>세 회사의 장점은<br>한 시스템 안에서 역할이 다르다</h2>
+          </div>
+          <div class="principle-grid">
+            <div class="principle"><span class="num">01 · LOGIC</span><h3>컨설팅의 구조</h3><p>결론형 제목, 근거, 의미, 다음 행동이 한 흐름으로 이어진다.</p></div>
+            <div class="principle"><span class="num">02 · VISUAL</span><h3>토스의 단순함</h3><p>여백과 타이포그래피가 주인공이 되고, 장식은 판단을 방해하지 않는다.</p></div>
+            <div class="principle"><span class="num">03 · EXPLAIN</span><h3>카카오의 쉬운 설명</h3><p>쉬운 말과 상황 예시로 이해에서 실제 행동까지 연결한다.</p></div>
+          </div>
+          <div class="source">BP references: Toss Design System · Kakao Easy-Read guide · BCG Executive Perspectives · McKinsey Year in Charts. Public materials were interpreted as principles, not copied as brand assets.</div>
+        </section>
+
+        <section class="slide hierarchy" data-title="Hierarchy">
+          <div class="kicker">Editorial hierarchy</div>
+          <h2>전문성은 장식보다<br><span class="accent">정보의 순서</span>에서 나온다</h2>
+          <div class="hierarchy-row">
+            <div class="hierarchy-unit"><span class="rank">FIRST</span><strong>결론</strong><p>제목만 보아도 이 장의 판단이 보여야 한다.</p></div>
+            <div class="hierarchy-unit"><span class="rank">SECOND</span><strong>근거</strong><p>숫자·사례·차트는 결론을 뒷받침하는 만큼만 남긴다.</p></div>
+            <div class="hierarchy-unit"><span class="rank">THIRD</span><strong>행동</strong><p>그래서 무엇을 판단하고 실행할지로 마무리한다.</p></div>
+          </div>
+        </section>
+
+        <section class="slide statement" data-title="One message">
+          <span class="giant" aria-hidden="true">1</span>
+          <div class="content">
+            <div class="index">RULE 01</div>
+            <div><h2>한 장에는<br>하나의 판단만 남긴다</h2><p class="lead">설명을 줄이는 것이 아니라, 이 장이 하는 일을 하나로 정하는 것이다. 나머지 정보는 그 판단을 지원한다.</p></div>
+          </div>
+        </section>
+
+        <section class="slide compare" data-title="Claim titles">
+          <div>
+            <div class="kicker">Claim-led titles</div>
+            <h2>같은 정보도 제목이 결론을 말하면 훨씬 빨리 읽힌다</h2>
+          </div>
+          <div class="compare-grid">
+            <div class="compare-panel"><div class="label"><span>BEFORE</span><span>주제형</span></div><blockquote>템플릿 운영 방안</blockquote><p>무엇에 대한 페이지인지는 보이지만, 어떤 판단을 내려야 하는지는 안 보인다.</p></div>
+            <div class="compare-panel after"><div class="label"><span>AFTER</span><span>결론형</span></div><blockquote>대표 템플릿 하나로 시작해야 품질과 운영이 모두 안정된다</blockquote><p>제목만 읽어도 이유와 권고가 전달된다.</p></div>
+          </div>
+        </section>
+
+        <section class="slide flow" data-title="HTML first">
+          <div>
+            <div class="kicker">HTML-first workflow</div>
+            <h2>HTML 정본 하나가<br>수정과 변환을 연결한다</h2>
+            <p class="lead">PPT와 PDF는 별도 작업물이 아니라, 확정된 HTML에서 나오는 파생본이다.</p>
+          </div>
+          <div class="flow-track">
+            <div class="flow-step"><strong>구조</strong><span>제목과 순서로 스토리를 먼저 정한다.</span></div>
+            <div class="flow-step"><strong>HTML</strong><span>내용과 디자인을 함께 보며 초안을 만든다.</span></div>
+            <div class="flow-step"><strong>수정</strong><span>대화로 정본을 계속 고친다.</span></div>
+            <div class="flow-step"><strong>변환</strong><span>필요할 때만 PPT 또는 PDF로 내보낸다.</span></div>
+          </div>
+        </section>
+
+        <section class="slide chart-slide" data-title="Chart">
+          <div class="chart-head">
+            <div><div class="kicker">Evidence design</div><h2>차트는 숫자를 보여주는 대신<br>판단을 앞당겨야 한다</h2></div>
+            <p class="chart-note"><strong>제목에 의미를 먼저 쓴다.</strong><br>시각적 강조는 가장 중요한 비교 하나에만 사용한다.</p>
+          </div>
+          <div class="chart" role="img" aria-label="형식 시연용 막대 차트. A 38, B 64, C 82.">
+            <div class="axis"><span>100</span><span>50</span><span>0</span></div>
+            <div class="bars">
+              <div class="bar-wrap"><span class="bar-value">38</span><div class="bar" style="height:38%"></div><span class="bar-label">A · 기존</span></div>
+              <div class="bar-wrap"><span class="bar-value accent">64</span><div class="bar b2" style="height:64%"></div><span class="bar-label">B · 개선</span></div>
+              <div class="bar-wrap"><span class="bar-value coral">82</span><div class="bar b3" style="height:82%"></div><span class="bar-label">C · 목표</span></div>
+            </div>
+          </div>
+          <div class="source">형식 시연용 예시 데이터. 실제 자료에서는 기간·단위·모수·원출처를 표시한다. Chart principle reference: McKinsey Year in Charts; BCG Executive Perspectives.</div>
+        </section>
+
+        <section class="slide explain" data-title="Easy explanation">
+          <div>
+            <div class="kicker">Easy-read explanation</div>
+            <h2>쉬운 설명은 내용을 줄이는 게 아니라<br><span class="accent">행동까지 연결</span>하는 것이다</h2>
+          </div>
+          <div class="explain-grid">
+            <div class="scene" aria-label="쉬운 설명을 상징하는 추상 일러스트"><div class="bubble">“어떤 상황에서, 무엇을, 어떻게 하면 되지?”</div><div class="person" aria-hidden="true"></div></div>
+            <div class="explain-steps">
+              <div class="explain-step"><span class="n">01</span><div><strong>상황</strong><p>언제 이 정보가 필요한지 먼저 보여준다.</p></div></div>
+              <div class="explain-step"><span class="n">02</span><div><strong>예시</strong><p>추상적 설명 다음에 실제 상황을 붙인다.</p></div></div>
+              <div class="explain-step"><span class="n">03</span><div><strong>행동</strong><p>보고 나서 바로 할 수 있는 다음 단계로 끝낸다.</p></div></div>
+            </div>
+          </div>
+          <div class="source">Principle reference: Kakao ‘더 쉬운 카톡설명서’ — easy language, situational examples, illustrations, text scaling, and contrast.</div>
+        </section>
+
+        <section class="slide system-slide" data-title="System">
+          <div>
+            <div class="kicker">Simple by design</div>
+            <h2>하나의 엔진에 레이아웃만 추가하면<br>운영은 복잡해지지 않는다</h2>
+          </div>
+          <div class="system-map">
+            <div class="system-core"><div class="core-mark">V</div><div><span class="small mono">VISUAL-DECK</span><strong>HTML 엔진<br>+공통 규칙</strong></div></div>
+            <div class="system-arrow" aria-hidden="true">→</div>
+            <div class="layout-list">
+              <div class="layout-item"><span class="n">01</span><strong>Executive Minimal</strong></div>
+              <div class="layout-item"><span class="n">02</span><strong>Learning <span class="small">· 필요 시</span></strong></div>
+              <div class="layout-item"><span class="n">03</span><strong>Report <span class="small">· 필요 시</span></strong></div>
+              <div class="layout-item"><span class="n">04</span><strong>Pitch <span class="small">· 필요 시</span></strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide close" data-title="Close">
+          <div>
+            <div class="kicker">Start focused</div>
+            <h2>초기 버전은<br>대표 템플릿 하나면 충분하다</h2>
+          </div>
+          <div class="close-grid">
+            <div class="close-item"><strong>먼저 사용한다</strong>실제 자료 2–3개에 적용해 수정 패턴을 본다.</div>
+            <div class="close-item"><strong>반복만 반영한다</strong>한 번의 취향이 아니라 반복되는 문제만 공통 규칙으로 올린다.</div>
+            <div class="close-item"><strong>필요할 때 넓힌다</strong>학습·보고·제안이 실제로 달라질 때만 새 템플릿을 추가한다.</div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <nav class="nav" aria-label="슬라이드 탐색">
+      <button id="prev" type="button" aria-label="이전 슬라이드">←</button>
+      <span class="counter"><span id="current">1</span> / <span id="total">10</span></span>
+      <button id="next" type="button" aria-label="다음 슬라이드">→</button>
+      <button id="overviewButton" type="button" aria-label="전체보기" title="전체보기 (O)">▦</button>
+    </nav>
+    <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+    <div class="hint">Arrow keys · Swipe · O Overview</div>
+
+    <aside class="overview" id="overview" aria-hidden="true">
+      <div class="overview-head"><strong>Executive Minimal · Overview</strong><button id="closeOverview" type="button">Close</button></div>
+      <div class="overview-grid" id="overviewGrid"></div>
+    </aside>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const currentEl = document.getElementById('current');
+    const totalEl = document.getElementById('total');
+    const progressBar = document.getElementById('progressBar');
+    const overview = document.getElementById('overview');
+    const overviewGrid = document.getElementById('overviewGrid');
+    let index = 0;
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    totalEl.textContent = slides.length;
+
+    // Auto slide numbering: slides stay renumbered when added, removed, or reordered.
+    slides.forEach((slide, i) => {
+      if (slide.classList.contains('cover')) return;
+      const no = document.createElement('span');
+      no.className = 'slide-no';
+      no.textContent = `${String(i + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+      slide.appendChild(no);
+    });
+
+    function show(nextIndex, updateHash = true) {
+      index = Math.max(0, Math.min(nextIndex, slides.length - 1));
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+      currentEl.textContent = index + 1;
+      progressBar.style.width = `${((index + 1) / slides.length) * 100}%`;
+      document.title = `${String(index + 1).padStart(2, '0')} · ${slides[index].dataset.title} — Visual Deck`;
+      if (updateHash) history.replaceState(null, '', `#${index + 1}`);
+    }
+
+    function setOverview(open) {
+      overview.classList.toggle('open', open);
+      overview.setAttribute('aria-hidden', String(!open));
+      if (open) {
+        requestAnimationFrame(scaleThumbs);
+        overview.querySelector('.thumb')?.focus();
+      }
+    }
+
+    function buildOverview() {
+      overviewGrid.innerHTML = '';
+      slides.forEach((slide, i) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'thumb';
+        button.setAttribute('aria-label', `${i + 1}번 슬라이드: ${slide.dataset.title}`);
+        const clone = slide.cloneNode(true);
+        clone.classList.add('active');
+        clone.removeAttribute('id');
+        clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+        const inner = document.createElement('div');
+        inner.className = 'thumb-inner';
+        inner.appendChild(clone);
+        const label = document.createElement('span');
+        label.className = 'thumb-label';
+        label.textContent = String(i + 1).padStart(2, '0');
+        button.append(inner, label);
+        button.addEventListener('click', () => { show(i); setOverview(false); });
+        overviewGrid.appendChild(button);
+      });
+      requestAnimationFrame(scaleThumbs);
+    }
+
+    function scaleThumbs() {
+      document.querySelectorAll('.thumb').forEach(thumb => {
+        const inner = thumb.querySelector('.thumb-inner');
+        const slide = inner.querySelector('.slide');
+        const scale = thumb.clientWidth / 1600;
+        inner.style.width = '1600px';
+        inner.style.height = '900px';
+        inner.style.transform = `scale(${scale})`;
+        slide.style.width = '1600px';
+        slide.style.height = '900px';
+      });
+    }
+
+    function scaleMobileDeck() {
+      document.documentElement.style.setProperty('--mobile-scale', Math.min(1, window.innerWidth / 1600));
+    }
+
+    document.getElementById('prev').addEventListener('click', () => show(index - 1));
+    document.getElementById('next').addEventListener('click', () => show(index + 1));
+    document.getElementById('overviewButton').addEventListener('click', () => setOverview(true));
+    document.getElementById('closeOverview').addEventListener('click', () => setOverview(false));
+    window.addEventListener('resize', () => { scaleThumbs(); scaleMobileDeck(); });
+
+    document.addEventListener('keydown', event => {
+      if (overview.classList.contains('open')) {
+        if (event.key === 'Escape' || event.key.toLowerCase() === 'o') setOverview(false);
+        return;
+      }
+      if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); show(index + 1); }
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); show(index - 1); }
+      if (event.key === 'Home') show(0);
+      if (event.key === 'End') show(slides.length - 1);
+      if (event.key.toLowerCase() === 'o') setOverview(true);
+    });
+
+    document.addEventListener('touchstart', event => {
+      touchStartX = event.changedTouches[0].screenX;
+      touchStartY = event.changedTouches[0].screenY;
+    }, { passive: true });
+    document.addEventListener('touchend', event => {
+      const dx = event.changedTouches[0].screenX - touchStartX;
+      const dy = event.changedTouches[0].screenY - touchStartY;
+      if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.3) show(index + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+
+    const initial = Number(location.hash.slice(1));
+    scaleMobileDeck();
+    buildOverview();
+    show(Number.isFinite(initial) && initial > 0 ? initial - 1 : 0, false);
+  </script>
+</body>
+</html>

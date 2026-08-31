@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "description": "Optional dependencies for editable PPTX export",
+  "dependencies": {
+    "jszip": "3.10.1",
+    "pptxgenjs": "4.0.1"
+  }
+}

@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PPT덱 레이아웃 라이브러리 — 19종 와이어프레임 정본">
+  <title>PPT덱 · 레이아웃 라이브러리 19종</title>
+  <style>
+    :root {
+      --paper: #fafaf8;
+      --ink: #111318;
+      --muted: #8a8f98;
+      --line: rgba(17,19,24,.16);
+      --wire: #b9bec7;
+      --wire-bg: #f0f1f3;
+      --blue: #2d5bff;
+      --ease: cubic-bezier(.22,1,.36,1);
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body { color: var(--ink); background: #e8e7e2; font-family: "Pretendard Variable", Pretendard, "Noto Sans KR", "Segoe UI", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+    .app { width: 100%; height: 100%; position: relative; }
+    .stage { position: absolute; inset: 0; display: grid; place-items: center; padding: 14px; }
+    .deck {
+      position: relative; container-type: size;
+      width: min(calc(100vw - 28px), calc((100vh - 28px) * 16 / 9));
+      height: min(calc(100vh - 28px), calc((100vw - 28px) * 9 / 16));
+      background: var(--paper); box-shadow: 0 24px 70px rgba(17,19,24,.16); overflow: hidden;
+    }
+    .slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: clamp(30px,4cqw,70px) clamp(34px,4.8cqw,88px); background: var(--paper); overflow: hidden; }
+    .slide.active { display: flex; animation: enter .4s var(--ease) both; }
+    @keyframes enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    /* 공통: 레이아웃 메타 라벨 */
+    .meta { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: clamp(12px,1.4cqw,24px); padding-bottom: 10px; border-bottom: 2px solid var(--ink); }
+    .meta .code { font-size: clamp(15px,1.3cqw,24px); font-weight: 830; letter-spacing: -.02em; }
+    .meta .id { color: var(--muted); font-family: Consolas, monospace; font-size: clamp(10px,.8cqw,14px); }
+    .use { margin: 0 0 clamp(14px,1.6cqw,26px); color: var(--muted); font-size: clamp(11px,.9cqw,16px); }
+
+    /* 와이어프레임 존 */
+    .zone { display: grid; place-items: center; border: 2px dashed var(--wire); background: var(--wire-bg); color: var(--muted); font-size: clamp(11px,.9cqw,16px); font-weight: 650; text-align: center; padding: 8px; min-height: 0; }
+    .zone.head { border-style: solid; border-width: 0 0 0 5px; border-color: var(--blue); background: #eef1ff; color: var(--ink); justify-items: start; text-align: left; padding: 12px 16px; font-size: clamp(13px,1.15cqw,21px); font-weight: 780; }
+    .zone.small { font-size: clamp(9px,.72cqw,13px); font-weight: 550; }
+    .body { flex: 1; display: grid; gap: clamp(8px,1cqw,16px); min-height: 0; }
+    .stack { display: grid; gap: clamp(8px,1cqw,16px); grid-template-rows: auto 1fr; flex: 1; min-height: 0; }
+    .arrow { display: grid; place-items: center; color: var(--wire); font-size: clamp(18px,2cqw,34px); font-weight: 800; }
+
+    /* 유형별 그리드 */
+    .g-cover { grid-template-rows: 1fr 2fr 1fr; }
+    .g-toc { grid-template-columns: 1fr 1fr; grid-auto-rows: 1fr; }
+    .g-bridge { grid-template-rows: 1fr auto 1fr; }
+    .g-conclusion { grid-template-rows: 1.2fr 1fr; }
+    .g-bullets { grid-auto-rows: 1fr; }
+    .g-cards2 { grid-template-columns: repeat(2,1fr); }
+    .g-cards3 { grid-template-columns: repeat(3,1fr); }
+    .g-cards4 { grid-template-columns: repeat(4,1fr); }
+    .g-contrast { grid-template-columns: 1fr auto 1fr; }
+    .g-matrix { grid-template-rows: auto 1fr; }
+    .g-kpi { grid-template-columns: repeat(3,1fr); grid-template-rows: 1fr auto; }
+    .g-chart { grid-template-columns: 1.4fr 1fr; }
+    .g-timeline { grid-template-rows: auto 1fr; }
+    .g-process { grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; }
+    .g-diagram { grid-template-columns: 1fr; }
+    .g-summary { grid-template-columns: repeat(3,1fr); }
+    .g-quad { grid-template-columns: auto 1fr 1fr; grid-template-rows: 1fr 1fr auto; }
+    .g-media { grid-template-columns: 1.1fr 1fr; }
+    .g-quote { grid-template-columns: 1.2fr 1fr; }
+    .row { display: grid; grid-template-columns: repeat(4,1fr); gap: clamp(8px,1cqw,16px); }
+    .matrix-grid { display: grid; grid-template-columns: 1.2fr repeat(3,1fr); grid-auto-rows: 1fr; gap: 4px; }
+
+    /* ── Navigation v2 (ppt-deck 공통 셸) ─────────────────────────
+       확정 UX(2026-08-30): 하단 중앙 롤오버 컨트롤 바(숨김→호버 시 표시,
+       투명도 .92, 데크 폭 비례 크기) + 좌우 30% 클릭 넘김 존. */
+    :fullscreen .deck { width: min(100vw, calc(100vh * 16 / 9)); height: min(100vh, calc(100vw * 9 / 16)); box-shadow: none; }
+    :fullscreen .stage { padding: 0; background: #000; }
+
+    /* 좌우 30% 페이지 넘김 존 (deck 내부) */
+    .turn-zone { position: absolute; top: 0; bottom: 0; width: 30%; z-index: 30; cursor: pointer; background: transparent; border: 0; padding: 0; display: block; }
+    .turn-zone.prev { left: 0; }
+    .turn-zone.next { right: 0; }
+    .turn-zone:focus-visible { outline: 2px solid var(--blue); outline-offset: -4px; }
+    .turn-zone .chevron {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      display: grid; place-items: center;
+      width: clamp(38px,3.4cqw,60px); height: clamp(38px,3.4cqw,60px);
+      border-radius: 50%;
+      background: rgba(17,19,24,.42); color: #fff;
+      font-size: clamp(18px,1.6cqw,28px); line-height: 1;
+      backdrop-filter: blur(6px);
+      opacity: 0; transition: opacity .22s ease, transform .22s var(--ease);
+      pointer-events: none;
+    }
+    .turn-zone.prev .chevron { left: clamp(14px,1.6cqw,28px); }
+    .turn-zone.next .chevron { right: clamp(14px,1.6cqw,28px); }
+    .turn-zone:hover .chevron, .turn-zone:focus-visible .chevron { opacity: .9; }
+    .turn-zone:active .chevron { transform: translateY(-50%) scale(.92); }
+    .turn-zone[data-disabled="true"] { cursor: default; }
+    .turn-zone[data-disabled="true"] .chevron { display: none; }
+
+    /* 하단 중앙 롤오버 컨트롤 바 (deck 내부) */
+    .nav-hotzone { position: absolute; left: 25%; right: 25%; bottom: 0; height: 18%; z-index: 40; }
+    .nav {
+      position: absolute; left: 50%; bottom: clamp(12px,1.6cqw,24px); z-index: 41;
+      display: flex; align-items: center; gap: clamp(2px,.25cqw,4px);
+      transform: translateX(-50%) translateY(8px);
+      padding: clamp(3px,.4cqw,6px) clamp(6px,.65cqw,10px);
+      border: 1px solid rgba(17,19,24,.1);
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 8px 30px rgba(17,19,24,.16);
+      backdrop-filter: blur(14px);
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s ease, transform .25s var(--ease);
+    }
+    .nav-hotzone:hover + .nav, .nav:hover, .nav:focus-within {
+      opacity: .92; pointer-events: auto; transform: translateX(-50%) translateY(0);
+    }
+    /* 데크 크기에 비례해 축소·확대 (기준: 1600px 데크에서 36px 버튼) */
+    .nav button { width: clamp(20px,2.25cqw,36px); height: clamp(20px,2.25cqw,36px); border: 0; border-radius: 50%; background: transparent; cursor: pointer; font: inherit; font-size: clamp(10px,1cqw,16px); color: var(--ink); display: grid; place-items: center; }
+    .nav button:hover, .nav button:focus-visible { outline: none; background: #dfe6ff; }
+    .nav button:disabled { opacity: .3; cursor: default; background: transparent; }
+    .counter { min-width: clamp(38px,4cqw,64px); text-align: center; color: var(--muted); font-size: clamp(9px,.75cqw,12px); font-weight: 760; font-variant-numeric: tabular-nums; user-select: none; }
+    .nav .sep { width: 1px; height: clamp(12px,1.1cqw,18px); background: rgba(17,19,24,.14); margin: 0 clamp(1px,.2cqw,3px); }
+
+    .progress { position: absolute; left: 0; right: 0; bottom: 0; z-index: 42; height: 3px; background: rgba(17,19,24,.1); pointer-events: none; }
+    .progress span { display: block; width: 0; height: 100%; background: var(--blue); transition: width .3s var(--ease); }
+
+    .overview { position: fixed; inset: 0; z-index: 100; display: none; padding: 34px; overflow: auto; background: rgba(17,19,24,.96); }
+    .overview.open { display: block; }
+    .overview-head { display: flex; justify-content: space-between; align-items: center; max-width: 1500px; margin: 0 auto 22px; color: #fff; }
+    .overview-head button { border: 1px solid rgba(255,255,255,.3); border-radius: 999px; padding: 8px 14px; color: #fff; background: transparent; cursor: pointer; font: inherit; }
+    .overview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; max-width: 1500px; margin: 0 auto; }
+    .thumb { position: relative; aspect-ratio: 16/9; overflow: hidden; border: 1px solid rgba(255,255,255,.2); background: var(--paper); cursor: pointer; }
+    .thumb:hover, .thumb:focus-visible { outline: none; border-color: var(--blue); }
+    .thumb-inner { position: absolute; inset: 0; container-type: size; transform-origin: top left; pointer-events: none; }
+    .thumb-label { position: absolute; left: 10px; bottom: 8px; z-index: 2; padding: 3px 7px; border-radius: 999px; color: #fff; background: rgba(17,19,24,.72); font-size: 10px; }
+
+    @media (max-width: 760px) {
+      .stage { padding: 0; }
+      .deck { position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px; transform: translate(-50%,-50%) scale(var(--mobile-scale,.25)); transform-origin: center; box-shadow: none; }
+      .nav { opacity: .92; pointer-events: auto; transform: translateX(-50%); } /* 모바일: 상시 표시 */
+    }
+    @media (hover: none) {
+      .nav { opacity: .92; pointer-events: auto; transform: translateX(-50%); } /* 터치 기기: 상시 표시 */
+      .turn-zone .chevron { opacity: .55; }
+    }
+    @media print {
+      @page { size: 13.333in 7.5in; margin: 0; }
+      html, body { width: auto; height: auto; overflow: visible; background: #fff; }
+      .app, .stage, .deck { display: block; position: static; width: auto; height: auto; padding: 0; box-shadow: none; overflow: visible; }
+      .deck { container-type: normal; }
+      .slide, .slide.active { display: flex !important; position: relative; width: 13.333in; height: 7.5in; break-after: page; animation: none !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .nav, .nav-hotzone, .turn-zone, .progress, .overview { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="stage">
+      <main class="deck" id="deck" aria-live="polite">
+
+        <section class="slide active" data-layout="cover" data-title="표지">
+          <div class="meta"><span class="code">01 · 표지</span><span class="id">data-layout="cover"</span></div>
+          <p class="use">제목·부제·날짜·보고자. 덱의 첫 장.</p>
+          <div class="body g-cover">
+            <div class="zone small">로고 / 부서명</div>
+            <div class="zone head">덱 제목 (h1) — 결론이 보이는 제목</div>
+            <div class="zone small">부제 · 날짜 · 보고자</div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="toc" data-title="목차">
+          <div class="meta"><span class="code">02 · 목차</span><span class="id">data-layout="toc"</span></div>
+          <p class="use">스토리보드의 목차구분 열에서 자동 생성.</p>
+          <div class="body g-toc">
+            <div class="zone">01 목차구분 A</div>
+            <div class="zone">02 목차구분 B</div>
+            <div class="zone">03 목차구분 C</div>
+            <div class="zone">04 목차구분 D</div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="summary" data-title="요약">
+          <div class="meta"><span class="code">03 · 요약</span><span class="id">data-layout="summary"</span></div>
+          <p class="use">Executive Summary. 덱 2페이지 고정 — 결론을 먼저 말한다. 상황·발견·권고 3단, 각 칸은 결론형 문장.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 = 덱 전체의 핵심 결론 1줄 (h2)</div>
+            <div class="body g-summary">
+              <div class="zone">상황/배경<br>결론형 문장 2~3개</div>
+              <div class="zone">핵심 발견<br>결론형 문장 2~3개</div>
+              <div class="zone">권고/요청<br>의사결정 사항</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="bridge" data-title="섹션브릿지">
+          <div class="meta"><span class="code">04 · 섹션브릿지</span><span class="id">data-layout="bridge"</span></div>
+          <p class="use">장 전환. 섹션 번호 + 핵심 메시지 1줄만.</p>
+          <div class="body g-bridge">
+            <div class="zone small">섹션 번호 (거대 숫자)</div>
+            <div class="zone head">이 섹션의 핵심 메시지 1줄 (h2)</div>
+            <div class="zone small">여백</div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="bullets" data-title="불릿">
+          <div class="meta"><span class="code">05 · 불릿</span><span class="id">data-layout="bullets"</span></div>
+          <p class="use">기본형. 주장 1줄 + 근거 나열. 근거 2~4개.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 = 이 장의 주장 (h2)</div>
+            <div class="body g-bullets">
+              <div class="zone">근거1 — 문장 또는 수치</div>
+              <div class="zone">근거2</div>
+              <div class="zone">근거3</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="cards-2" data-title="2단카드">
+          <div class="meta"><span class="code">06 · 2단카드</span><span class="id">data-layout="cards-2"</span></div>
+          <p class="use">대등한 항목 2개 병렬. 대립이 아닌 나열.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 (h2)</div>
+            <div class="body g-cards2">
+              <div class="zone">카드 1<br>소제목 + 설명 + 수치</div>
+              <div class="zone">카드 2</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="cards-3" data-title="3단카드">
+          <div class="meta"><span class="code">07 · 3단카드</span><span class="id">data-layout="cards-3"</span></div>
+          <p class="use">대등한 항목 3개 병렬.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 (h2)</div>
+            <div class="body g-cards3">
+              <div class="zone">카드 1</div>
+              <div class="zone">카드 2</div>
+              <div class="zone">카드 3</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="cards-4" data-title="4단카드">
+          <div class="meta"><span class="code">08 · 4단카드</span><span class="id">data-layout="cards-4"</span></div>
+          <p class="use">대등한 항목 4개 병렬.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 (h2)</div>
+            <div class="body g-cards4">
+              <div class="zone">카드 1</div>
+              <div class="zone">카드 2</div>
+              <div class="zone">카드 3</div>
+              <div class="zone">카드 4</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="contrast" data-title="2단대비">
+          <div class="meta"><span class="code">09 · 2단대비</span><span class="id">data-layout="contrast"</span></div>
+          <p class="use">Before/After · A안 vs B안. 대립 구도.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 = 대비가 말하는 결론 (h2)</div>
+            <div class="body g-contrast">
+              <div class="zone">BEFORE / A안<br>(중립 톤)</div>
+              <div class="arrow">→</div>
+              <div class="zone">AFTER / B안<br>(강조 톤 — 권고안)</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="matrix" data-title="비교표">
+          <div class="meta"><span class="code">10 · 비교표</span><span class="id">data-layout="matrix"</span></div>
+          <p class="use">다항목×다기준 매트릭스. 권고 열은 강조.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 = 표가 말하는 결론 (h2)</div>
+            <div class="matrix-grid">
+              <div class="zone small">기준↓</div><div class="zone small">항목 A</div><div class="zone small">항목 B (권고·강조)</div><div class="zone small">항목 C</div>
+              <div class="zone small">기준 1</div><div class="zone small">·</div><div class="zone small">·</div><div class="zone small">·</div>
+              <div class="zone small">기준 2</div><div class="zone small">·</div><div class="zone small">·</div><div class="zone small">·</div>
+              <div class="zone small">기준 3</div><div class="zone small">·</div><div class="zone small">·</div><div class="zone small">·</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="quad" data-title="2x2">
+          <div class="meta"><span class="code">11 · 2x2</span><span class="id">data-layout="quad"</span></div>
+          <p class="use">2축 4분면 — 우선순위(임팩트×난이도)·포지셔닝 맵. 권고 사분면 강조.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 = 맵이 말하는 결론 (h2)</div>
+            <div class="body g-quad">
+              <div class="zone small" style="grid-row:1/3; writing-mode:vertical-rl">Y축 라벨</div>
+              <div class="zone">2사분면</div>
+              <div class="zone">1사분면 (권고·강조)</div>
+              <div class="zone">3사분면</div>
+              <div class="zone">4사분면</div>
+              <div class="zone small" style="grid-column:2/4">X축 라벨</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="kpi" data-title="KPI">
+          <div class="meta"><span class="code">12 · KPI</span><span class="id">data-layout="kpi"</span></div>
+          <p class="use">핵심 숫자 1~4개 강조. 숫자가 주인공. 1개면 빅넘버(중앙 초대형), 5개+면 대시보드 타일.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 = 숫자들이 말하는 결론 (h2)</div>
+            <div class="body g-kpi">
+              <div class="zone">큰 숫자 1<br>+ 라벨 + 증감</div>
+              <div class="zone">큰 숫자 2</div>
+              <div class="zone">큰 숫자 3</div>
+              <div class="zone small" style="grid-column:1/-1">각주: 기간 · 단위 · 출처</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="chart" data-title="차트+해설">
+          <div class="meta"><span class="code">13 · 차트+해설</span><span class="id">data-layout="chart"</span></div>
+          <p class="use">좌측 차트, 우측 시사점. 강조는 비교 1개에만. 누적 증감은 워터폴 변형.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 = 차트가 말하는 판단 (h2)</div>
+            <div class="body g-chart">
+              <div class="zone">차트 영역<br>(막대/선/파이 — 축·단위·출처 표기)</div>
+              <div class="zone">시사점 2~3개<br>+ 다음 행동</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="media" data-title="이미지+텍스트">
+          <div class="meta"><span class="code">14 · 이미지+텍스트</span><span class="id">data-layout="media"</span></div>
+          <p class="use">제품·현장·화면 이미지 + 설명 병치. 이미지 파일은 사용자 제공 또는 확정 후 삽입.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 (h2)</div>
+            <div class="body g-media">
+              <div class="zone">이미지 영역<br>(제품컷 · 화면캡처 · 현장사진)</div>
+              <div class="zone">설명 포인트 2~3개<br>+ 캡션·출처</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="quote" data-title="인용/VOC">
+          <div class="meta"><span class="code">15 · 인용/VOC</span><span class="id">data-layout="quote"</span></div>
+          <p class="use">고객·이해관계자 인용 + 뒷받침 데이터. 인용은 1~2개만 크게.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 = 인용이 증명하는 주장 (h2)</div>
+            <div class="body g-quote">
+              <div class="zone">“인용문 (큰 따옴표 타이포)”<br>— 화자 · 출처 · 날짜</div>
+              <div class="zone">뒷받침 데이터<br>(빈도 · 비율 · 관련 수치)</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="timeline" data-title="타임라인">
+          <div class="meta"><span class="code">16 · 타임라인</span><span class="id">data-layout="timeline"</span></div>
+          <p class="use">시점 기반 일정·로드맵. 마일스톤 표시.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 (h2)</div>
+            <div class="body g-timeline">
+              <div class="zone small">기간 축 (월/분기)</div>
+              <div class="row">
+                <div class="zone">단계 1<br>기간 + 산출물</div>
+                <div class="zone">단계 2</div>
+                <div class="zone">단계 3</div>
+                <div class="zone">단계 4 ◆ 마일스톤</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="process" data-title="프로세스">
+          <div class="meta"><span class="code">17 · 프로세스</span><span class="id">data-layout="process"</span></div>
+          <p class="use">화살표 단계 흐름. 절차·전환·퍼널(볼륨 감소 표기). 3~5단계.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 (h2)</div>
+            <div class="body g-process">
+              <div class="zone">단계 1<br>이름 + 설명</div>
+              <div class="arrow">→</div>
+              <div class="zone">단계 2</div>
+              <div class="arrow">→</div>
+              <div class="zone">단계 3</div>
+              <div class="arrow">→</div>
+              <div class="zone">단계 4</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="diagram" data-title="도식">
+          <div class="meta"><span class="code">18 · 도식</span><span class="id">data-layout="diagram"</span></div>
+          <p class="use">정적 구조 — 조직도·시스템 구성·관계도. 순차 흐름이면 프로세스 사용.</p>
+          <div class="stack">
+            <div class="zone head">헤드라인 (h2)</div>
+            <div class="body g-diagram">
+              <div class="zone">도식 영역<br>(박스·선·그룹 — HTML/SVG로 직접 작도, 이미지 캡처 금지)</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="slide" data-layout="conclusion" data-title="결론/권고">
+          <div class="meta"><span class="code">19 · 결론/권고</span><span class="id">data-layout="conclusion"</span></div>
+          <p class="use">의사결정 요청 + 다음 단계. 마지막 장.</p>
+          <div class="stack">
+            <div class="zone head">권고: 헤드라인 = 요청하는 의사결정 (h2)</div>
+            <div class="body g-conclusion">
+              <div class="row">
+                <div class="zone">근거 요약 1</div>
+                <div class="zone">근거 요약 2</div>
+                <div class="zone">근거 요약 3</div>
+                <div class="zone">근거 요약 4</div>
+              </div>
+              <div class="zone">다음 단계 (누가 · 무엇을 · 언제까지)</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 좌우 넘김 존 (deck 내부, 슬라이드 위) -->
+        <button class="turn-zone prev" id="turnPrev" type="button" aria-label="이전 슬라이드"><span class="chevron">‹</span></button>
+        <button class="turn-zone next" id="turnNext" type="button" aria-label="다음 슬라이드"><span class="chevron">›</span></button>
+
+        <!-- 하단 롤오버 컨트롤 -->
+        <div class="nav-hotzone" id="navHotzone" aria-hidden="true"></div>
+        <nav class="nav" id="navBar" aria-label="슬라이드 탐색">
+          <button id="prev" type="button" aria-label="이전 슬라이드">←</button>
+          <span class="counter"><span id="current">1</span> / <span id="total">19</span></span>
+          <button id="next" type="button" aria-label="다음 슬라이드">→</button>
+          <span class="sep" aria-hidden="true"></span>
+          <button id="fullscreenButton" type="button" aria-label="전체화면" title="전체화면 (F)">⛶</button>
+          <button id="overviewButton" type="button" aria-label="전체보기" title="전체보기 (O)">▦</button>
+        </nav>
+        <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+      </main>
+    </div>
+
+    <aside class="overview" id="overview" aria-hidden="true">
+      <div class="overview-head"><strong>레이아웃 라이브러리 · Overview</strong><button id="closeOverview" type="button">Close</button></div>
+      <div class="overview-grid" id="overviewGrid"></div>
+    </aside>
+  </div>
+
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    const currentEl = document.getElementById('current');
+    const totalEl = document.getElementById('total');
+    const progressBar = document.getElementById('progressBar');
+    const overview = document.getElementById('overview');
+    const overviewGrid = document.getElementById('overviewGrid');
+    const turnPrev = document.getElementById('turnPrev');
+    const turnNext = document.getElementById('turnNext');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    let index = 0, touchStartX = 0, touchStartY = 0;
+    totalEl.textContent = slides.length;
+
+    function show(nextIndex, updateHash = true) {
+      index = Math.max(0, Math.min(nextIndex, slides.length - 1));
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+      currentEl.textContent = index + 1;
+      progressBar.style.width = `${((index + 1) / slides.length) * 100}%`;
+      const atFirst = index === 0, atLast = index === slides.length - 1;
+      turnPrev.dataset.disabled = String(atFirst);
+      turnNext.dataset.disabled = String(atLast);
+      turnPrev.setAttribute('aria-disabled', String(atFirst));
+      turnNext.setAttribute('aria-disabled', String(atLast));
+      prevBtn.disabled = atFirst;
+      nextBtn.disabled = atLast;
+      document.title = `${String(index + 1).padStart(2, '0')} · ${slides[index].dataset.title} — 레이아웃 라이브러리`;
+      if (updateHash) history.replaceState(null, '', `#${index + 1}`);
+    }
+
+    turnPrev.addEventListener('click', () => { if (turnPrev.dataset.disabled !== 'true') show(index - 1); });
+    turnNext.addEventListener('click', () => { if (turnNext.dataset.disabled !== 'true') show(index + 1); });
+
+    function toggleFullscreen() {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen().catch(() => {});
+    }
+    document.getElementById('fullscreenButton').addEventListener('click', toggleFullscreen);
+    function setOverview(open) {
+      overview.classList.toggle('open', open);
+      overview.setAttribute('aria-hidden', String(!open));
+      if (open) { requestAnimationFrame(scaleThumbs); overview.querySelector('.thumb')?.focus(); }
+    }
+    function buildOverview() {
+      overviewGrid.innerHTML = '';
+      slides.forEach((slide, i) => {
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'thumb';
+        button.setAttribute('aria-label', `${i + 1}: ${slide.dataset.title}`);
+        const clone = slide.cloneNode(true);
+        clone.classList.add('active'); clone.removeAttribute('id');
+        clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+        const inner = document.createElement('div');
+        inner.className = 'thumb-inner'; inner.appendChild(clone);
+        const label = document.createElement('span');
+        label.className = 'thumb-label'; label.textContent = String(i + 1).padStart(2, '0');
+        button.append(inner, label);
+        button.addEventListener('click', () => { show(i); setOverview(false); });
+        overviewGrid.appendChild(button);
+      });
+      requestAnimationFrame(scaleThumbs);
+    }
+    function scaleThumbs() {
+      document.querySelectorAll('.thumb').forEach(thumb => {
+        const inner = thumb.querySelector('.thumb-inner');
+        const slide = inner.querySelector('.slide');
+        const scale = thumb.clientWidth / 1600;
+        inner.style.width = '1600px'; inner.style.height = '900px';
+        inner.style.transform = `scale(${scale})`;
+        slide.style.width = '1600px'; slide.style.height = '900px';
+      });
+    }
+    function scaleMobileDeck() {
+      document.documentElement.style.setProperty('--mobile-scale', Math.min(1, window.innerWidth / 1600));
+    }
+    document.getElementById('prev').addEventListener('click', () => show(index - 1));
+    document.getElementById('next').addEventListener('click', () => show(index + 1));
+    document.getElementById('overviewButton').addEventListener('click', () => setOverview(true));
+    document.getElementById('closeOverview').addEventListener('click', () => setOverview(false));
+    window.addEventListener('resize', () => { scaleThumbs(); scaleMobileDeck(); });
+    document.addEventListener('keydown', event => {
+      if (overview.classList.contains('open')) {
+        if (event.key === 'Escape' || event.key.toLowerCase() === 'o') setOverview(false);
+        return;
+      }
+      if (['ArrowRight', 'PageDown', ' '].includes(event.key)) { event.preventDefault(); show(index + 1); }
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); show(index - 1); }
+      if (event.key === 'Home') show(0);
+      if (event.key === 'End') show(slides.length - 1);
+      if (event.key.toLowerCase() === 'o') setOverview(true);
+      if (event.key.toLowerCase() === 'f') toggleFullscreen();
+    });
+    document.addEventListener('touchstart', event => {
+      touchStartX = event.changedTouches[0].screenX;
+      touchStartY = event.changedTouches[0].screenY;
+    }, { passive: true });
+    document.addEventListener('touchend', event => {
+      const dx = event.changedTouches[0].screenX - touchStartX;
+      const dy = event.changedTouches[0].screenY - touchStartY;
+      if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.3) show(index + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+    const initial = Number(location.hash.slice(1));
+    scaleMobileDeck();
+    buildOverview();
+    show(Number.isFinite(initial) && initial > 0 ? initial - 1 : 0, false);
+  </script>
+</body>
+</html>
