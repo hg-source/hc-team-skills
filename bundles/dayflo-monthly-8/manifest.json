@@ -1,5 +1,6 @@
 {
   "schema_version": 1,
+  "hash_mode": "sha256-utf8-lf",
   "bundle": "dayflo-monthly-8",
   "version": "2026.08.31",
   "profile": "dayflo-local",
