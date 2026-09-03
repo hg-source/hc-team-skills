@@ -1,7 +1,0 @@
-interface:
-  display_name: "딥솔루션"
-  short_description: "복잡한 문제의 원인과 대안을 검증해 해결책과 실행 방향을 도출"
-  default_prompt: "$deep-validation-flow(딥솔루션)로 이 문제의 원인을 분석하고 가설과 대안을 검증해 해결책과 실행 방향을 제안해줘."
-
-policy:
-  allow_implicit_invocation: true

@@ -1,7 +1,8 @@
 # HC Team Skills
 
 헬스케어부문 팀 교육·공유용 **Claude Code 스킬 모음**입니다.
-개인 워크스페이스에서 검증된 스킬 26종을 공개 안전화하여 정리했습니다.
+개인 워크스페이스에서 검증된 스킬 25종을 공개 안전화하여 정리했습니다.
+개인용 스킬과 별도 공유 묶음은 이 저장소에 포함하지 않습니다. 팀 배포 범위는 `TEAM_SKILLS.json`의 25종으로 고정되며 CI가 추가 스킬과 `bundles/` 유입을 차단합니다.
 
 스킬은 키워드 기반으로 **자동 트리거**됩니다(수동 슬래시 커맨드가 아님).
 예: "오늘 daily note 만들어줘" → `daily-note` 자동 실행.
@@ -9,17 +10,6 @@
 ---
 
 ## 시작하기
-
-### 면접준비 스킬만 설치하기
-
-Claude Code·Git·Node.js 22.20 이상이 준비돼 있다면 터미널에서 실행하세요.
-
-```bash
-npx skills add hg-source/hc-team-skills --skill interview-prep -a claude-code -g --copy
-```
-
-설치 후 Claude Code의 새 대화에서 **"다운로드 폴더의 홍길동 이력서로 면접준비해줘"**라고 요청하면 됩니다. 같은 이름의 기존 스킬을 수정해 사용 중이면 먼저 백업하세요.
-설치는 스킬 파일만 복사하며, 첫 요청에서 빈 면접툴을 초기화합니다. [사용법·개인정보·업데이트 안내](.claude/skills/interview-prep/README.md)
 
 ### 전체 워크스페이스 사용하기
 
@@ -31,12 +21,7 @@ npx skills add hg-source/hc-team-skills --skill interview-prep -a claude-code -g
 
 ---
 
-## 스킬 카탈로그 (26종)
-
-### 👥 채용 면접
-| 스킬 | 하는 일 | 트리거 키워드 |
-|------|---------|----------------|
-| `interview-prep` | JD·이력서 기반 질문·잠정 평가·로컬 면접툴 준비 | "면접준비", "면접 세팅", "면접질문 만들어줘" |
+## 스킬 카탈로그 (25종)
 
 ### 📄 문서·데이터 변환
 | 스킬 | 하는 일 | 트리거 키워드 |
@@ -101,7 +86,7 @@ npx skills add hg-source/hc-team-skills --skill interview-prep -a claude-code -g
 이미지 OCR에 Google **Gemini API 키**가 필요합니다(크롤링 자체는 로컬).
 
 1. 키 발급: https://aistudio.google.com/apikey
-2. `.claude/skills/web-crawler-ocr/scripts/.env` 파일 생성 (`.env.example` 참고):
+2. `.claude/skills/web-crawler-ocr/scripts/.env` 파일 생성 (`env.example.txt` 참고):
    ```
    GEMINI_API_KEY=your_gemini_api_key_here
    ```

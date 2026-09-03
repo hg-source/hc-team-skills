@@ -1,9 +1,0 @@
-{
-  "schema_version": 1,
-  "scope": "local-default",
-  "notion_enabled": false,
-  "hub_page_id": null,
-  "research_data_source_id": null,
-  "insight_data_source_id": null,
-  "note": "No account, token, page URL, or database ID is distributed. Configure and authorize an external connection separately."
-}

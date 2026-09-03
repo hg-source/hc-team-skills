@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "profile": "team-25",
+  "skills": {
+    "csv-clean": ["SKILL.md", "scripts/csv-clean.py", "scripts/requirements.txt"],
+    "daily-note": ["SKILL.md"],
+    "daily-review": ["SKILL.md"],
+    "dashboard-prd": ["SKILL.md", "references/dashboard-principles.md"],
+    "decompose": ["SKILL.md"],
+    "doc-updater": ["SKILL.md"],
+    "excel-to-csv": ["SKILL.md", "scripts/excel-to-csv.py", "scripts/requirements.txt"],
+    "execute": ["SKILL.md"],
+    "idea": ["SKILL.md"],
+    "integrate": ["SKILL.md"],
+    "md-to-pdf": ["SKILL.md", "references/content-budget.md", "references/monochrome-theme.md"],
+    "notion-handler": ["SKILL.md", "scripts/notion_api.py"],
+    "pdf-to-md": ["SKILL.md", "scripts/pdf_to_md.py", "scripts/requirements.txt"],
+    "sensemaking": ["SKILL.md", "framework/theoretical-base.md"],
+    "setup-workspace": ["SKILL.md"],
+    "thinking-partner": ["SKILL.md"],
+    "todo": ["SKILL.md"],
+    "todos": ["SKILL.md"],
+    "transcript-organizer": ["SKILL.md", "templates/interview-template.md", "templates/lecture-template.md", "templates/meeting-template.md", "utils/encoding-detector.sh"],
+    "web-crawler-ocr": ["README.md", "SKILL.md", "scripts/.gitignore", "scripts/env.example.txt", "scripts/gemini-ocr.py", "scripts/requirements-stealth.txt", "scripts/requirements.txt", "scripts/web-crawler.py"],
+    "webapp-prd": ["SKILL.md", "references/webapp-design-principles.md"],
+    "weekly-synthesis": ["SKILL.md"],
+    "wiki-ingest": ["SKILL.md"],
+    "wiki-lint": ["SKILL.md"],
+    "youtube-to-notion": ["SKILL.md", "scripts/notion-save.mjs", "scripts/package-lock.json", "scripts/package.json", "scripts/youtube-fetch.mjs", "scripts/yt-search.mjs"]
+  }
+}

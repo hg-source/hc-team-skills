@@ -1,3 +1,8 @@
+---
+name: youtube-to-notion
+description: 유튜브 영상 URL의 자막과 내용을 분석해 Notion에 저장한다. 유튜브 저장, 유튜브 정리, 영상 자막 정리 요청에 사용한다.
+---
+
 # youtube-to-notion
 
 유튜브 URL을 받아 자막을 분석하고 Notion 데이터베이스에 자동 저장하는 스킬.

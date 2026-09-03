@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "profile": "team-25",
+  "expected_count": 25,
+  "skill_root": ".claude/skills",
+  "skills": [
+    "csv-clean",
+    "daily-note",
+    "daily-review",
+    "dashboard-prd",
+    "decompose",
+    "doc-updater",
+    "excel-to-csv",
+    "execute",
+    "idea",
+    "integrate",
+    "md-to-pdf",
+    "notion-handler",
+    "pdf-to-md",
+    "sensemaking",
+    "setup-workspace",
+    "thinking-partner",
+    "todo",
+    "todos",
+    "transcript-organizer",
+    "web-crawler-ocr",
+    "webapp-prd",
+    "weekly-synthesis",
+    "wiki-ingest",
+    "wiki-lint",
+    "youtube-to-notion"
+  ]
+}

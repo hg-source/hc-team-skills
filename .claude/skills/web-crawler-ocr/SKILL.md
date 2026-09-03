@@ -213,7 +213,7 @@ pip install -r requirements.txt
 
 - **Main Script**: `.claude/skills/web-crawler-ocr/scripts/web-crawler.py`
 - **Helper Script**: `.claude/skills/web-crawler-ocr/scripts/gemini-ocr.py`
-- **Config Template**: `.claude/skills/web-crawler-ocr/scripts/.env.example`
+- **Config Template**: `.claude/skills/web-crawler-ocr/scripts/env.example.txt`
 - **Requirements**: `.claude/skills/web-crawler-ocr/scripts/requirements.txt`
 - **Stealth Requirements**: `.claude/skills/web-crawler-ocr/scripts/requirements-stealth.txt`
 - **Virtual Env**: `.claude/skills/web-crawler-ocr/scripts/venv/` (created on first run)
